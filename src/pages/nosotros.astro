@@ -1,0 +1,56 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { authors, editorialStats, siteConfig } from '../lib/demo';
+---
+
+<Layout title="Nosotros" description="Conoce la revista, su línea editorial, el equipo y su propósito colectivo." >
+  <main class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-16">
+    <section class="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
+      <div class="space-y-6">
+        <p class="text-xs font-semibold uppercase tracking-[0.2em] text-sky-800">Nosotros</p>
+        <h1 class="text-4xl font-black tracking-tight text-slate-950 sm:text-5xl">Una revista pensada para sostener el debate.</h1>
+        <p class="text-lg leading-8 text-slate-600">
+          {siteConfig.tagline} La revista combina archivo, análisis y narrativa visual para ofrecer un espacio de lectura que acompaña la vida pública y cultural del presente.
+        </p>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-2">
+        {editorialStats.map((item) => (
+          <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <p class="text-3xl font-black tracking-tight text-sky-900">{item.value}</p>
+            <p class="mt-2 text-sm text-slate-600">{item.label}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section class="mt-14 border-t border-slate-200 pt-12">
+      <h2 class="text-3xl font-bold tracking-tight text-slate-950">Equipo y colaboradores</h2>
+      <div class="mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+        {authors.map((author) => (
+          <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm" id={author.slug}>
+            <img src={author.image} alt={author.name} class="h-56 w-full rounded-2xl object-cover" />
+            <h3 class="mt-5 text-xl font-semibold text-slate-900">{author.name}</h3>
+            <p class="mt-1 text-sm font-medium text-sky-900">{author.role}</p>
+            <p class="mt-3 text-sm leading-6 text-slate-600">{author.bio}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="mt-14 grid gap-8 rounded-[2rem] border border-slate-200 bg-sky-950 p-8 text-white lg:grid-cols-[1fr_0.9fr]">
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-[0.2em] text-sky-200">Contacto</p>
+        <h2 class="mt-3 text-3xl font-bold">Colaboraciones y propuestas editoriales</h2>
+        <p class="mt-4 max-w-xl text-sky-100">
+          Si quieres proponer una pieza, colaborar con la sección o presentar un trabajo para la revista, escríbenos.
+        </p>
+      </div>
+      <div class="space-y-3 rounded-2xl bg-white/5 p-5 text-sm">
+        <p><span class="font-semibold text-white">Email:</span> {siteConfig.email}</p>
+        <p><span class="font-semibold text-white">Teléfono:</span> {siteConfig.phone}</p>
+        <p><span class="font-semibold text-white">Ubicación:</span> {siteConfig.location}</p>
+      </div>
+    </section>
+  </main>
+</Layout>

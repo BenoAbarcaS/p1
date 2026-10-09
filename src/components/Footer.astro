@@ -1,0 +1,48 @@
+---
+import { siteConfig } from '../lib/demo';
+import { withBasePath } from '../lib/paths';
+---
+
+<footer class="border-t border-slate-200 bg-slate-950 text-slate-200">
+  <div class="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-4 lg:px-8">
+    <div>
+      <p class="text-sm font-semibold uppercase tracking-[0.2em] text-white">{siteConfig.name}</p>
+      <p class="mt-4 max-w-xs text-sm text-slate-300">{siteConfig.tagline}</p>
+    </div>
+
+    <div>
+      <h3 class="text-sm font-semibold uppercase tracking-[0.2em] text-white">Navegación</h3>
+      <ul class="mt-4 space-y-2 text-sm text-slate-300">
+        <li><a href={withBasePath('/revista')} class="hover:text-white">Revista</a></li>
+        <li><a href={withBasePath('/articulos')} class="hover:text-white">Artículos</a></li>
+        <li><a href={withBasePath('/videos')} class="hover:text-white">Vídeos</a></li>
+        <li><a href={withBasePath('/nosotros')} class="hover:text-white">Nosotros</a></li>
+      </ul>
+    </div>
+
+    <div>
+      <h3 class="text-sm font-semibold uppercase tracking-[0.2em] text-white">Contacto</h3>
+      <ul class="mt-4 space-y-2 text-sm text-slate-300">
+        <li>{siteConfig.email}</li>
+        <li>{siteConfig.phone}</li>
+        <li>{siteConfig.location}</li>
+      </ul>
+    </div>
+
+    <div>
+      <h3 class="text-sm font-semibold uppercase tracking-[0.2em] text-white">Redes</h3>
+      <ul class="mt-4 space-y-2 text-sm text-slate-300">
+        <li><a href={siteConfig.socialLinks.instagram} target="_blank" rel="noreferrer" class="hover:text-white">Instagram</a></li>
+        <li><a href={siteConfig.socialLinks.youtube} target="_blank" rel="noreferrer" class="hover:text-white">YouTube</a></li>
+        <li><a href={siteConfig.socialLinks.x} target="_blank" rel="noreferrer" class="hover:text-white">X / Twitter</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="border-t border-slate-800">
+    <div class="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-6 text-sm text-slate-400 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
+      <p>© 2026 {siteConfig.name}. Todos los derechos reservados.</p>
+      <p>Hecho para lectura, archivo y memoria editorial.</p>
+    </div>
+  </div>
+</footer>

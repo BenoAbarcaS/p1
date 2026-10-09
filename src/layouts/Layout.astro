@@ -1,0 +1,32 @@
+---
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { withBasePath } from '../lib/paths';
+import '../styles/global.css';
+
+const {
+  title = 'Revista Norte',
+  description = 'Plataforma editorial para una revista impresa y digital con lectura, archivo y contenido visual.',
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="generator" content={Astro.generator} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://images.unsplash.com/photo-1493246507139-91e8fad9978e?auto=format&fit=crop&w=1200&q=80" />
+    <link rel="sitemap" href={withBasePath('/sitemap-index.xml')} />
+    <title>{title}</title>
+  </head>
+  <body class="min-h-screen bg-slate-50 text-slate-900 antialiased">
+    <Header />
+    <slot />
+    <Footer />
+  </body>
+</html>

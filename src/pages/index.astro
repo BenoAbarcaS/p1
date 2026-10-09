@@ -1,0 +1,105 @@
+---
+import Layout from '../layouts/Layout.astro';
+import ArticleCard from '../components/ArticleCard.astro';
+import IssueCard from '../components/IssueCard.astro';
+import VideoCard from '../components/VideoCard.astro';
+import SocialGallery from '../components/SocialGallery.astro';
+import { featuredArticle, featuredVideo, socialPosts, videos, siteConfig } from '../lib/demo';
+import { getArticles, getIssues } from '../lib/queries';
+import { withBasePath } from '../lib/paths';
+
+const recentArticles = (await getArticles()).slice(0, 3);
+const issues = await getIssues();
+const latestIssue = issues[0];
+const recentVideos = videos.slice(0, 3);
+const recentSocial = socialPosts.slice(0, 3);
+---
+
+<Layout title="Inicio" description={siteConfig.description}>
+  <main class="bg-slate-50">
+    <section class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-16">
+      <div class="grid items-center gap-8 lg:grid-cols-[1.1fr_0.9fr]">
+        <div class="space-y-6">
+          <p class="text-xs font-semibold uppercase tracking-[0.22em] text-sky-900">Revista editorial</p>
+          <h1 class="max-w-xl text-4xl font-black leading-none tracking-tight text-slate-950 sm:text-5xl lg:text-6xl">
+            Claridad teórica, firmeza política. 
+          </h1>
+          <p class="max-w-xl text-lg leading-8 text-slate-600">
+            {siteConfig.tagline}
+          </p>
+          <div class="flex flex-wrap gap-4">
+            <a href={withBasePath('/articulos')} class="inline-flex rounded-full bg-sky-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-sky-900">
+              Explorar publicaciones
+            </a>
+            <a href={withBasePath('/revista')} class="inline-flex rounded-full border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-800 transition hover:border-sky-700 hover:text-sky-900">
+              Ver la revista
+            </a>
+          </div>
+        </div>
+
+        <div class="overflow-hidden rounded-[2rem] border border-slate-200 bg-white p-3 shadow-[0_24px_80px_-40px_rgba(13,58,119,0.35)]">
+          <img src={featuredArticle.image} alt={featuredArticle.title} class="h-[520px] w-full rounded-[1.5rem] object-cover" />
+        </div>
+      </div>
+    </section>
+
+    <section class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+      <div class="mb-8 flex items-end justify-between">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-[0.2em] text-sky-800">Publicaciones recientes</p>
+          <h2 class="mt-2 text-3xl font-bold tracking-tight text-slate-950">Lecturas del mes</h2>
+        </div>
+        <a href={withBasePath('/articulos')} class="hidden text-sm font-semibold text-sky-900 underline-offset-4 hover:underline md:inline-flex">Ver archivo</a>
+      </div>
+      <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+        {recentArticles.map((article) => <ArticleCard article={article} />)}
+      </div>
+    </section>
+
+    <section class="border-y border-slate-200 bg-sky-950 text-white">
+      <div class="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:px-8 lg:py-16">
+        <div class="space-y-4">
+          <p class="text-xs font-semibold uppercase tracking-[0.22em] text-sky-200">Edición impresa</p>
+          <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">{latestIssue.title}</h2>
+          <p class="text-base leading-7 text-sky-100">{latestIssue.description}</p>
+          <p class="text-sm leading-7 text-sky-100">{latestIssue.body ?? latestIssue.summary}</p>
+          <div class="flex flex-wrap gap-4 text-sm text-sky-100">
+            <span>Edición {latestIssue.number}</span>
+            <span>•</span>
+            <span>{latestIssue.publishDate}</span>
+          </div>
+          <a href={withBasePath(`/revista/${latestIssue.slug}#leer-edicion`)} class="inline-flex rounded-full border border-white/30 bg-white/5 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/10">
+            Leer edición
+          </a>
+        </div>
+
+        <div class="overflow-hidden rounded-[2rem] border border-white/10 bg-slate-900/40 p-3">
+          <img src={latestIssue.cover} alt={latestIssue.title} class="h-[460px] w-full rounded-[1.5rem] object-cover" />
+        </div>
+      </div>
+    </section>
+
+    <section id="redes" class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-16">
+      <div class="mb-8 flex items-end justify-between">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-[0.2em] text-sky-800">Redes sociales</p>
+          <h2 class="mt-2 text-3xl font-bold tracking-tight text-slate-950">Del archivo visual de la revista</h2>
+        </div>
+        <a href={siteConfig.socialLinks.instagram} target="_blank" rel="noreferrer" class="hidden text-sm font-semibold text-sky-900 underline-offset-4 hover:underline md:inline-flex">
+          Seguir en Instagram
+        </a>
+      </div>
+
+      <div class="mt-10">
+        <SocialGallery posts={recentSocial} />
+      </div>
+
+      <div class="mt-14">
+        <h3 class="mb-6 text-2xl font-bold tracking-tight text-slate-950">Vídeos recientes</h3>
+        <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+          {recentVideos.map((video) => <VideoCard video={video} />)}
+        </div>
+      </div>
+    </section>
+  </main>
+</Layout>

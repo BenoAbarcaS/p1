@@ -1,0 +1,27 @@
+---
+import type { Video } from '../lib/demo';
+import { getYouTubeThumbnail, getYouTubeVideoUrl } from '../lib/demo';
+
+interface Props {
+  video: Video;
+}
+
+const { video } = Astro.props as Props;
+const videoUrl = getYouTubeVideoUrl(video);
+---
+
+<a href={videoUrl} target="_blank" rel="noreferrer" class="group block overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+  <img src={getYouTubeThumbnail(video)} alt={video.title} class="h-52 w-full object-cover object-center" loading="lazy" />
+  <div class="space-y-3 p-5">
+    <div class="flex items-center justify-between text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-sky-800">
+      <span>Vídeo</span>
+      <span>{video.duration}</span>
+    </div>
+    <h3 class="text-lg font-semibold text-slate-900">{video.title}</h3>
+    <p class="text-sm leading-6 text-slate-600">{video.description}</p>
+    <div class="flex items-center justify-between text-xs text-slate-500">
+      <span>{video.publishedAt}</span>
+      <span class="font-medium text-sky-900">Ver en YouTube</span>
+    </div>
+  </div>
+</a>

@@ -1,0 +1,26 @@
+---
+import type { Issue } from '../lib/demo';
+import { withBasePath } from '../lib/paths';
+
+interface Props {
+  issue: Issue;
+}
+
+const { issue } = Astro.props as Props;
+---
+
+<article class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+  <img src={issue.cover} alt={issue.title} class="h-72 w-full object-cover" loading="lazy" />
+  <div class="space-y-4 p-5">
+    <div class="flex items-center justify-between">
+      <span class="text-sm font-semibold uppercase tracking-[0.2em] text-sky-800">Edición {issue.number}</span>
+      <span class="text-xs text-slate-500">{issue.publishDate}</span>
+    </div>
+    <h3 class="text-xl font-semibold text-slate-900">{issue.title}</h3>
+    <p class="text-sm leading-6 text-slate-600">{issue.description}</p>
+    <p class="text-sm leading-6 text-slate-600">{issue.body ?? issue.summary}</p>
+    <a href={withBasePath(`/revista/${issue.slug}#leer-edicion`)} class="inline-flex text-sm font-semibold text-sky-900 underline-offset-4 hover:underline">
+      Leer edición
+    </a>
+  </div>
+</article>

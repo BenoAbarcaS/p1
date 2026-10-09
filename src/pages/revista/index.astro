@@ -1,0 +1,45 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import IssueCard from '../../components/IssueCard.astro';
+import { getIssues } from '../../lib/queries';
+import { withBasePath } from '../../lib/paths';
+
+const issues = await getIssues();
+const latestIssue = issues[0];
+const archiveIssues = issues.slice(1);
+---
+
+<Layout title="Revista" description="Archivo editorial de la revista impresa y los números publicados." >
+  <main class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-16">
+    <section class="grid gap-8 pb-12 lg:grid-cols-[0.9fr_1.1fr]">
+      <div class="overflow-hidden rounded-[2rem] border border-slate-200 bg-white p-3 shadow-sm">
+        <img src={latestIssue.cover} alt={latestIssue.title} class="h-[540px] w-full rounded-[1.5rem] object-cover" />
+      </div>
+
+      <div class="space-y-6 self-center">
+        <p class="text-xs font-semibold uppercase tracking-[0.2em] text-sky-800">Edición actual</p>
+        <h1 class="text-4xl font-black tracking-tight text-slate-950 sm:text-5xl">{latestIssue.title}</h1>
+        <div class="flex flex-wrap gap-3 text-sm text-slate-600">
+          <span>Edición {latestIssue.number}</span>
+          <span>•</span>
+          <span>{latestIssue.publishDate}</span>
+        </div>
+        <p class="text-lg leading-8 text-slate-600">{latestIssue.description}</p>
+        <p class="text-base leading-7 text-slate-600">{latestIssue.body ?? latestIssue.summary}</p>
+        <a href={withBasePath(`/revista/${latestIssue.slug}#leer-edicion`)} class="inline-flex rounded-full bg-sky-950 px-5 py-3 text-sm font-semibold text-white hover:bg-sky-900">
+          Leer edición
+        </a>
+      </div>
+    </section>
+
+    <section class="border-t border-slate-200 pt-12">
+      <div class="mb-8">
+        <p class="text-xs font-semibold uppercase tracking-[0.2em] text-sky-800">Archivo de ediciones</p>
+        <h2 class="mt-2 text-3xl font-bold tracking-tight text-slate-950">Números anteriores</h2>
+      </div>
+      <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+        {archiveIssues.map((issue) => <IssueCard issue={issue} />)}
+      </div>
+    </section>
+  </main>
+</Layout>

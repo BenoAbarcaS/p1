@@ -1,0 +1,150 @@
+---
+interface Props {
+  pdfUrl?: string;
+  title: string;
+}
+
+const { pdfUrl, title } = Astro.props;
+---
+
+{pdfUrl ? (
+  <section
+    id="leer-edicion"
+    class="mt-12 space-y-5"
+    data-pdf-reader
+    data-pdf-url={pdfUrl}
+    data-pdf-title={title}
+  >
+    <div class="flex flex-wrap items-center justify-between gap-4">
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-sky-800">Lectura digital</p>
+        <h2 class="mt-2 text-2xl font-bold text-slate-950">{title}</h2>
+      </div>
+      <a href={pdfUrl} target="_blank" rel="noreferrer" class="text-sm font-semibold text-sky-900 underline underline-offset-4">
+        Abrir PDF aparte
+      </a>
+    </div>
+
+    <div class="overflow-hidden rounded-2xl border border-slate-200 bg-slate-100 p-3 sm:p-6">
+      <div data-pdf-book class="mx-auto w-full max-w-[860px]"></div>
+      <p data-pdf-status role="status" class="py-5 text-center text-sm text-slate-600">Cargando edición…</p>
+      <p data-pdf-error role="alert" hidden class="mx-auto max-w-2xl py-5 text-center text-sm text-rose-800"></p>
+    </div>
+
+    <div class="flex items-center justify-center gap-5">
+      <button data-pdf-previous type="button" disabled class="rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-sky-700 hover:text-sky-900 disabled:cursor-not-allowed disabled:opacity-40">
+        Anterior
+      </button>
+      <span data-pdf-page-count class="min-w-16 text-center text-sm tabular-nums text-slate-600">0 / 0</span>
+      <button data-pdf-next type="button" disabled class="rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-sky-700 hover:text-sky-900 disabled:cursor-not-allowed disabled:opacity-40">
+        Siguiente
+      </button>
+    </div>
+  </section>
+) : (
+  <section id="leer-edicion" class="mt-12 rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center">
+    <p class="text-xs font-semibold uppercase tracking-[0.18em] text-sky-800">Lectura digital</p>
+    <h2 class="mt-2 text-2xl font-bold text-slate-950">El PDF de esta edición aún no está cargado</h2>
+    <p class="mx-auto mt-3 max-w-xl text-sm leading-6 text-slate-600">Al subir el archivo PDF de esta edición en Sanity, podrás leerlo aquí con el efecto de pasar página.</p>
+  </section>
+)}
+
+<script>
+  import pageFlipModule from 'page-flip';
+  import { GlobalWorkerOptions, getDocument } from 'pdfjs-dist/legacy/build/pdf.mjs';
+  import pdfWorkerUrl from 'pdfjs-dist/legacy/build/pdf.worker.min.mjs?url';
+
+  GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
+
+  const reader = document.querySelector<HTMLElement>('[data-pdf-reader]');
+
+  if (reader) {
+    const pdfUrl = reader.dataset.pdfUrl;
+    const book = reader.querySelector<HTMLElement>('[data-pdf-book]');
+    const status = reader.querySelector<HTMLElement>('[data-pdf-status]');
+    const errorMessage = reader.querySelector<HTMLElement>('[data-pdf-error]');
+    const pageCount = reader.querySelector<HTMLElement>('[data-pdf-page-count]');
+    const previousButton = reader.querySelector<HTMLButtonElement>('[data-pdf-previous]');
+    const nextButton = reader.querySelector<HTMLButtonElement>('[data-pdf-next]');
+
+    if (pdfUrl && book && status && errorMessage && pageCount && previousButton && nextButton) {
+      void loadPdf(pdfUrl, book, status, errorMessage, pageCount, previousButton, nextButton);
+    }
+  }
+
+  async function loadPdf(
+    pdfUrl: string,
+    book: HTMLElement,
+    status: HTMLElement,
+    errorMessage: HTMLElement,
+    pageCount: HTMLElement,
+    previousButton: HTMLButtonElement,
+    nextButton: HTMLButtonElement,
+  ) {
+    try {
+          const pdf = await getDocument(pdfUrl).promise;
+          const pages: HTMLElement[] = [];
+
+          for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
+            status.textContent = `Preparando página ${pageNumber} de ${pdf.numPages}…`;
+            const pdfPage = await pdf.getPage(pageNumber);
+            const baseViewport = pdfPage.getViewport({ scale: 1 });
+            const viewport = pdfPage.getViewport({ scale: Math.min(1, 450 / baseViewport.width) });
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+
+            if (!context) throw new Error('No se pudo crear el canvas de lectura.');
+
+            canvas.width = Math.ceil(viewport.width);
+            canvas.height = Math.ceil(viewport.height);
+            canvas.style.width = '100%';
+            canvas.style.height = '100%';
+            canvas.style.objectFit = 'contain';
+            await pdfPage.render({ canvas, canvasContext: context, viewport }).promise;
+
+            const pageElement = document.createElement('div');
+            pageElement.className = 'pdf-flip-page';
+            pageElement.style.display = 'flex';
+            pageElement.style.alignItems = 'center';
+            pageElement.style.justifyContent = 'center';
+            pageElement.style.overflow = 'hidden';
+            pageElement.style.background = '#fff';
+            pageElement.append(canvas);
+            pages.push(pageElement);
+          }
+
+          const PageFlip = pageFlipModule.PageFlip;
+          const pageFlip = new PageFlip(book, {
+            width: 430,
+            height: 608,
+            size: 'stretch',
+            minWidth: 280,
+            maxWidth: 430,
+            minHeight: 396,
+            maxHeight: 608,
+            autoSize: true,
+            showCover: true,
+            usePortrait: true,
+            maxShadowOpacity: 0.2,
+            mobileScrollSupport: false,
+          });
+
+          pageFlip.on('flip', ({ data }) => updatePageControls(data));
+          pageFlip.loadFromHTML(pages);
+          updatePageControls(pageFlip.getCurrentPageIndex());
+          status.hidden = true;
+          previousButton.addEventListener('click', () => pageFlip.flipPrev());
+          nextButton.addEventListener('click', () => pageFlip.flipNext());
+
+          function updatePageControls(pageIndex: number) {
+            pageCount.textContent = `${pageIndex + 1} / ${pdf.numPages}`;
+            previousButton.disabled = pageIndex <= 0;
+            nextButton.disabled = pageIndex >= pdf.numPages - 1;
+          }
+    } catch {
+      status.hidden = true;
+      errorMessage.textContent = 'No se pudo cargar el PDF. Comprueba que el archivo sea público y que la URL permita lectura desde este sitio.';
+      errorMessage.hidden = false;
+    }
+  }
+</script>

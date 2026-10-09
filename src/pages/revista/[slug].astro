@@ -1,0 +1,80 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { articles, authors, issues } from '../../lib/demo';
+import type { Issue } from '../../lib/demo';
+import PdfFlipReader from '../../components/PdfFlipReader.astro';
+import { getIssues } from '../../lib/queries';
+import { withBasePath } from '../../lib/paths';
+
+interface Props {
+  issue: Issue;
+}
+
+export async function getStaticPaths() {
+  const issues = await getIssues();
+  return issues.map((issue) => ({ params: { slug: issue.slug }, props: { issue } }));
+}
+
+const { issue } = Astro.props as Props;
+const relatedArticles = articles.slice(0, 3);
+const contributors = authors.slice(0, 3);
+---
+
+<Layout title={issue.title} description={issue.description}>
+  <main class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-16">
+    <section class="grid gap-10 lg:grid-cols-[0.8fr_1.2fr]">
+      <div class="overflow-hidden rounded-[2rem] border border-slate-200 bg-white p-3 shadow-sm">
+        <img src={issue.cover} alt={issue.title} class="h-[520px] w-full rounded-[1.5rem] object-cover" />
+      </div>
+
+      <div class="space-y-6">
+        <p class="text-xs font-semibold uppercase tracking-[0.2em] text-sky-800">Número {issue.number}</p>
+        <h1 class="text-4xl font-black tracking-tight text-slate-950 sm:text-5xl">{issue.title}</h1>
+        <div class="flex flex-wrap gap-3 text-sm text-slate-600">
+          <span>{issue.publishDate}</span>
+          <span>•</span>
+          <span>{issue.summary}</span>
+        </div>
+        <p class="text-lg leading-8 text-slate-600">{issue.description}</p>
+
+        <div class="flex flex-wrap gap-4">
+          <a href={withBasePath('/revista')} class="inline-flex rounded-full bg-sky-950 px-5 py-3 text-sm font-semibold text-white hover:bg-sky-900">Volver al archivo</a>
+          <a href="#leer-edicion" class="inline-flex rounded-full bg-sky-950 px-5 py-3 text-sm font-semibold text-white hover:bg-sky-900">Leer edición</a>
+        </div>
+      </div>
+    </section>
+
+    <PdfFlipReader pdfUrl={issue.pdfUrl} title={issue.title} />
+
+    <section class="mt-12">
+      <div class="space-y-6">
+        <h2 class="text-2xl font-bold text-slate-950">Artículos relacionados</h2>
+        <div class="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+          {relatedArticles.map((article) => (
+            <article class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+              <img src={article.image} alt={article.title} class="h-44 w-full object-cover" />
+              <div class="space-y-3 p-4">
+                <p class="text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-sky-800">{article.type}</p>
+                <h3 class="text-lg font-semibold text-slate-900">{article.title}</h3>
+                <a href={withBasePath(`/articulos/${article.slug}`)} class="text-sm font-semibold text-sky-900 hover:underline">Leer artículo</a>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="mt-12 border-t border-slate-200 pt-10">
+      <h2 class="text-2xl font-bold text-slate-950">Autores participantes</h2>
+      <div class="mt-6 grid gap-6 md:grid-cols-3">
+        {contributors.map((person) => (
+          <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+            <img src={person.image} alt={person.name} class="h-28 w-28 rounded-full object-cover" />
+            <h3 class="mt-4 text-lg font-semibold text-slate-900">{person.name}</h3>
+            <p class="text-sm text-sky-900">{person.role}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  </main>
+</Layout>

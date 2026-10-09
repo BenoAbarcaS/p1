@@ -1,0 +1,61 @@
+---
+import { siteConfig } from '../lib/demo';
+import { withBasePath } from '../lib/paths';
+const navItems = siteConfig.nav;
+const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
+const currentPath = Astro.url.pathname.replace(basePath, '') || '/';
+---
+
+<header class="sticky top-0 z-50 border-b border-slate-200 bg-white/90 backdrop-blur-sm">
+  <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
+    <a href={withBasePath('/')} class="flex items-center gap-3 text-sm font-semibold uppercase tracking-[0.2em] text-slate-900">
+      <span class="flex h-10 w-10 items-center justify-center rounded-full bg-sky-950 text-base font-bold text-white">R</span>
+      <span>{siteConfig.name}</span>
+    </a>
+
+    <nav aria-label="Navegación principal" class="hidden items-center gap-8 md:flex">
+      {navItems.map((item) => {
+        const itemPath = item.href.split('#')[0];
+        const isActive = currentPath === itemPath || (itemPath !== '/' && currentPath.startsWith(itemPath));
+        return (
+          <a
+            href={withBasePath(item.href)}
+            class:list={[
+              'text-sm font-medium transition-colors',
+              isActive ? 'text-sky-900' : 'text-slate-600 hover:text-sky-800',
+            ]}
+          >
+            {item.label}
+          </a>
+        );
+      })}
+    </nav>
+
+    <div class="flex items-center gap-3">
+      <form action={withBasePath('/articulos')} method="get" role="search" class="flex items-center gap-2">
+        <label class="hidden items-center rounded-full border border-slate-300 px-3 py-2 sm:flex">
+          <span class="sr-only">Buscar artículos o autores</span>
+          <input
+            type="search"
+            name="q"
+            placeholder="Buscar artículos"
+            class="w-28 bg-transparent text-sm text-slate-800 outline-none placeholder:text-slate-400 lg:w-36"
+          />
+        </label>
+        <button
+          type="submit"
+          class="inline-flex rounded-full border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-sky-700 hover:text-sky-900"
+        >
+          Buscar
+        </button>
+      </form>
+      <button
+        type="button"
+        class="inline-flex rounded-full border border-slate-300 p-2 text-slate-700 md:hidden"
+        aria-label="Abrir menú"
+      >
+        ☰
+      </button>
+    </div>
+  </div>
+</header>
