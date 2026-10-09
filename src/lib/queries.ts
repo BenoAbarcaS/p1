@@ -1,12 +1,11 @@
 import { existsSync } from 'node:fs';
-import { join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { join, resolve } from 'node:path';
 import { articles, issues, socialPosts, videos } from './demo';
 import type { Article, Issue } from './demo';
 import { isSanityConfigured, sanityClient } from './sanity';
 import { withBasePath } from './paths';
 
-const localIssuePdfDirectory = fileURLToPath(new URL('../../public/ediciones/', import.meta.url));
+const localIssuePdfDirectory = resolve(process.cwd(), 'public', 'ediciones');
 
 function withLocalIssuePdfs(issueList: Issue[]): Issue[] {
   return issueList.map((issue) => {
