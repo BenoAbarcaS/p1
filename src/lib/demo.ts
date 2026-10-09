@@ -386,6 +386,16 @@ export const socialPosts: SocialPost[] = [
     href: 'https://instagram.com/p/CxKj8ZSvN2m',
     publishedAt: '2026-08-20',
   },
+  {
+    title: '2 prueba Reflexiones sobre Jornada de Protestas',
+    description: 'Contexto y análisis de los eventos de protesta.',
+    image:
+      'https://g5noticias.cl/wp-content/uploads/2023/09/WhatsApp-Image-2023-09-11-at-19.09.21-1024x768.jpeg',
+    alt: 'Manifestantes en las calles durante la jornada de protestas',
+    platform: 'Instagram',
+    href: 'https://instagram.com/p/CxKj8ZSvN2m',
+    publishedAt: '2026-08-20',
+  },
 ];
 
 export const latestIssue = issues[0];
