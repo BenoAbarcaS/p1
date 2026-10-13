@@ -5,8 +5,8 @@ import { schemaTypes } from './sanity/schemaTypes';
 export default defineConfig({
   name: 'revista-norte-studio',
   title: 'Revista Norte',
-  projectId: process.env.SANITY_STUDIO_PROJECT_ID || 'your_project_id',
-  dataset: process.env.SANITY_STUDIO_DATASET || 'production',
+  projectId: import.meta.env.PUBLIC_SANITY_PROJECT_ID,
+  dataset: import.meta.env.PUBLIC_SANITY_DATASET || 'production',
   plugins: [structureTool()],
   schema: {
     types: schemaTypes,
